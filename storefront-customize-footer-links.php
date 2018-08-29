@@ -2,8 +2,6 @@
 
 // Customize the storefront theme footer
 
-add_action( 'init', 'storefront_child__remove_footer_credit', 10 );
-
 function storefront_child__remove_footer_credit () {
 	remove_action( 'storefront_footer', 'storefront_credit', 20 );
 	add_action( 'storefront_footer', 'storefront_child__custom_footer_credit', 20 );
@@ -18,3 +16,5 @@ function storefront_child__custom_footer_credit() {
 	</div>
 	<?php
 }
+
+add_action( 'init', 'storefront_child__remove_footer_credit', 10 );
