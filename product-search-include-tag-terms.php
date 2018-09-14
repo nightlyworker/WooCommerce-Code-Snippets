@@ -6,7 +6,7 @@
 function storefront_child__search_by_product_tag( $posts, $query = false ) {
 
 	// Only for searches
-	if( ! is_search() || ! is_main_query() || ! $query ) {
+	if( ! is_search() || ! is_main_query() || ! $query || false === in_array( 'product', $post_type ) ) {
 		return $posts;
 	}
 
