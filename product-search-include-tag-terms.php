@@ -1,12 +1,15 @@
 <?php
 
-// Extends product search widget or Storefront theme product search to include tags
-// or any other taxonomies you should modify here
+// Filter the main query priority 10 with 2 arguments
+add_filter( 'the_posts', 'storefront_child__search_by_product_tag', 10, 2 );
 
 function storefront_child__search_by_product_tag( $posts, $query = false ) {
+  	global $post_type;
+    $is_product = isset( $post_type ) && is_array( $post_type )
+        ? false === in_array( 'product', $post_type ) : false;
 
-	// Only for searches
-	if( ! is_search() || ! is_main_query() || ! $query || false === in_array( 'product', $post_type ) ) {
+	// Only for searches of products
+	if( ! is_search() || ! is_main_query() || ! $query || ! $is_product ) {
 		return $posts;
 	}
 
@@ -29,5 +32,3 @@ function storefront_child__search_by_product_tag( $posts, $query = false ) {
 	// Pass results
 	return $posts;
 }
-
-add_filter( 'the_posts', 'storefront_child__search_by_product_tag', 10, 2 );
