@@ -21,6 +21,36 @@ add_filter( 'woocommerce_email_headers', function( $headers, $email_id, $order )
 add_filter( 'send_password_change_email', '__return_false' );
 ```
 
+### Stop user enumerations for PCI scanner compliance
+```
+// Credits: https://plugins.trac.wordpress.org/browser/stop-user-enumeration/trunk/frontend/class-frontend.php
+add_action( 'plugins_loaded', function() {
+	if( ! is_user_logged_in() && isset( $_REQUEST['author'] ) ) {
+		if( preg_match( '/\\d/', $_REQUEST['author'] ) > 0 ) {
+			wp_die(
+				esc_html__( 'forbidden - number in author name not allowed = ', 'stop-user-enumeration' )
+				. esc_html( $_REQUEST['author'] )
+			);
+		}
+	}
+} );
+add_action( 'rest_authentication_errors', function( $access ) {
+	if(
+		preg_match( '/users/', $_SERVER['REQUEST_URI'] ) !== 0
+		|| isset( $_REQUEST['rest_route'] ) && preg_match( '/users/', $_REQUEST['rest_route'] ) !== 0
+	) {
+		if( ! is_user_logged_in() ) {
+			return new WP_Error(
+				'rest_cannot_access',
+				esc_html__( 'Only authenticated users can access the User endpoint REST API.', 'stop-user-enumeration' ),
+				array( 'status' => rest_authorization_required_code() )
+			);
+		}
+	}
+	return $access;
+} );
+```
+
 ## Author
 
 * **Coded Commerce, LLC** - *Initial work* - [Coded-Commerce-LLC](https://github.com/Coded-Commerce-LLC)
