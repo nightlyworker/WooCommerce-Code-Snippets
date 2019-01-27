@@ -46,6 +46,23 @@ add_action( 'send_headers',function() {
 } );
 ```
 
+### Elementor adds shortcode for hooking in templates `do_shortcode( '[INSERT_ELEMENTOR id="226"]' );`
+```
+namespace Elementor;
+add_shortcode( 'INSERT_ELEMENTOR', 'Elementor\wts_insert_elementor' );
+function wts_insert_elementor( $atts ) {
+	if( ! class_exists( 'Elementor\Plugin' ) ) {
+		return '';
+	}
+	if( ! isset( $atts['id'] ) || empty( $atts['id'] ) ) {
+		return '';
+	}
+	$post_id = $atts['id'];
+	$response = Plugin::instance()->frontend->get_builder_content_for_display( $post_id );
+	return $response;
+}
+```
+
 ## JetPack Plugin
 
 ### User registrations to JetPack
@@ -135,6 +152,34 @@ add_filter( 'woocommerce_add_to_cart_validation', function( $passed, $product_id
 }, 20, 3 );
 ```
 
+### Add variable product options to product archives
+```
+// Credits to: https://iconicwp.com/blog/show-variations-shop-page-woocommerce/
+add_action( 'init', function() {
+    remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart', 10 );
+    add_action( 'woocommerce_after_shop_loop_item', function() {
+		global $product;
+		if ( ! $product->is_type( 'variable' ) ) {
+			woocommerce_template_loop_add_to_cart();
+			return;
+		}
+		remove_action( 'woocommerce_single_variation', 'woocommerce_single_variation_add_to_cart_button', 20 );
+		add_action( 'woocommerce_single_variation', function() {
+			global $product; 
+			?>
+			<div class="woocommerce-variation-add-to-cart variations_button">
+				<button type="submit" class="single_add_to_cart_button button"><?php echo esc_html( $product->single_add_to_cart_text() ); ?></button>
+				<input type="hidden" name="add-to-cart" value="<?php echo absint( $product->get_id() ); ?>" />
+				<input type="hidden" name="product_id" value="<?php echo absint( $product->get_id() ); ?>" />
+				<input type="hidden" name="variation_id" class="variation_id" value="0" />
+			</div>
+			<?php
+		}, 20 );
+		woocommerce_template_single_add_to_cart();
+	}, 10 );
+}, 10 );
+```
+
 ### Add SKU to product search
 
 ```
@@ -206,6 +251,16 @@ add_action( 'init', function() {
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
 } );
 add_filter( 'woocommerce_is_purchasable', '__return_false' );
+```
+
+### Disable products archive sort options
+```
+add_filter( "woocommerce_catalog_orderby", function( $orderby ) {
+	//unset( $orderby["price"] );
+	//unset( $orderby["price-desc"] );
+	unset( $orderby["rating"] );
+	return $orderby;
+}, 20 );
 ```
 
 ### Disable payment gateways by product
