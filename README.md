@@ -10,6 +10,10 @@ These code snippets are intended for use with the [Code Snippets](https://wordpr
 * Enable it on either the front end, the back end, or both.
 * Be sure to test them out on a dev site first.
 
+### Official archive
+
+* Also, consult the [official code snippets archive](https://docs.woocommerce.com/documentation/plugins/woocommerce/woocommerce-codex/snippets/) from WooCommerce documentation.
+
 ## Author
 
 * **Coded Commerce, LLC** - *Initial work* - [Coded-Commerce-LLC](https://github.com/Coded-Commerce-LLC)
